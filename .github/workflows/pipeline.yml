@@ -6,9 +6,17 @@ on:
       - main
 
 jobs:
-  simple-job:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - name: Hello World
-        run: echo "Hello from CI pipeline"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linter
+        run: npm run eslint
+
+      - name: Run tests
+        run: npm test
