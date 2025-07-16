@@ -1,51 +1,31 @@
-import React from 'react'
-import { Routes, Route, useMatch } from 'react-router-dom'
-import { useApi } from './useApi'
-import LoadingSpinner from './LoadingSpinner'
-import ErrorMessage from './ErrorMessage'
-import PokemonPage from './PokemonPage'
-import PokemonList from './PokemonList'
-
-const mapResults = ({ results }) =>
-  results.map(({ url, name }) => ({
-    url,
-    name,
-    id: parseInt(url.match(/\/(\d+)\//)[1])
-  }))
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import config from './config'
 
 const App = () => {
-  const match = useMatch('/pokemon/:name')
-  const { data: pokemonList, error, isLoading } =
-    useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
+  const [pokemon, setPokemon] = useState([])
+  const [error, setError] = useState(null)
 
-  if (isLoading) return <LoadingSpinner />
-  if (error) return <ErrorMessage error={error} />
-
-  let next = null
-  let previous = null
-
-  if (match && match.params) {
-    const current = pokemonList.find(p => p.name === match.params.name)
-    if (current) {
-      previous = pokemonList.find(p => p.id === current.id - 1)
-      next = pokemonList.find(p => p.id === current.id + 1)
-    }
-  }
+  useEffect(() => {
+    axios.get(`${config.apiBaseUrl}/api/pokemon`)
+      .then(response => setPokemon(response.data.results)) // ✅ tärkeä muutos tähän!
+      .catch(e => setError(e))
+  }, [])
 
   return (
-    <Routes>
-      <Route path="/" element={<PokemonList pokemonList={pokemonList} />} />
-      <Route
-        path="/pokemon/:name"
-        element={
-          <PokemonPage
-            pokemonList={pokemonList}
-            previous={previous}
-            next={next}
-          />
-        }
-      />
-    </Routes>
+    <div>
+      <h1>Pokedex</h1>
+      {error && (
+        <div data-testid="error">
+          Virhe tapahtui API-kutsussa
+        </div>
+      )}
+      <ul>
+        {pokemon.map((p, i) => (
+          <li key={i}>{p.name}</li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
