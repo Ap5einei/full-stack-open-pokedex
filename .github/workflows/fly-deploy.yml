@@ -3,16 +3,20 @@ name: Deploy to Fly.io
 on:
   push:
     branches:
-      - main  # tai mikä deploy-haara sinulla on
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
 
 jobs:
   deploy:
     name: Deploy to Fly.io
     runs-on: ubuntu-latest
 
-    # ✅ Tämä on uusi osa tehtävään 11.10:
     environment:
-      name: production
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
     steps:
       - uses: actions/checkout@v3
