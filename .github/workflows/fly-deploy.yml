@@ -38,10 +38,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           set -euo pipefail
-          npm test
+          npm test -- --coverage
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
 
   deploy:
     name: Deploy to Fly.io
