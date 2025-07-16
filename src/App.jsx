@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import config from './config'
+import React, { useState, useEffect } from "react" 
+import axios from "axios" 
+import config from "./config"
 
 const App = () => {
   const [pokemon, setPokemon] = useState([])
@@ -8,7 +8,7 @@ const App = () => {
 
   useEffect(() => {
     axios.get(`${config.apiBaseUrl}/api/pokemon`)
-      .then(response => setPokemon(response.data.results)) // ✅ tärkeä muutos tähän!
+      .then(response => setPokemon(response.data.results))
       .catch(e => setError(e))
   }, [])
 
