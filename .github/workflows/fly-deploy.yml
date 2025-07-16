@@ -3,24 +3,35 @@ name: Deploy to Fly.io
 on:
   push:
     branches:
-      - main  # tai mikä deploy-haara sinulla on
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
 
 jobs:
   deploy:
     name: Deploy to Fly.io
     runs-on: ubuntu-latest
 
-    # ✅ Tämä on uusi osa tehtävään 11.10:
+    defaults:
+      run:
+        shell: bash
+
     environment:
-      name: production
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Install Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+      - name: Deploy to Fly.io with error handling
+        run: |
+          set -euo pipefail
+          flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
