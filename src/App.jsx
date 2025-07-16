@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useMatch
-} from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 import { useApi } from './useApi'
 import LoadingSpinner from './LoadingSpinner'
 import ErrorMessage from './ErrorMessage'
@@ -18,21 +13,13 @@ const mapResults = ({ results }) =>
     id: parseInt(url.match(/\/(\d+)\//)[1])
   }))
 
-const AppContent = () => {
+const App = () => {
   const match = useMatch('/pokemon/:name')
-  const {
-    data: pokemonList,
-    error,
-    isLoading
-  } = useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
+  const { data: pokemonList, error, isLoading } =
+    useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  if (error) {
-    return <ErrorMessage error={error} />
-  }
+  if (isLoading) return <LoadingSpinner />
+  if (error) return <ErrorMessage error={error} />
 
   let next = null
   let previous = null
@@ -47,10 +34,7 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<PokemonList pokemonList={pokemonList} />}
-      />
+      <Route path="/" element={<PokemonList pokemonList={pokemonList} />} />
       <Route
         path="/pokemon/:name"
         element={
@@ -64,11 +48,5 @@ const AppContent = () => {
     </Routes>
   )
 }
-
-const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
-)
 
 export default App
